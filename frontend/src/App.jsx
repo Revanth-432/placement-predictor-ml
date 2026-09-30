@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Brain, GraduationCap, Sparkles, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import './index.css';
 
 function App() {
@@ -42,7 +41,7 @@ function App() {
       
       setResult(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to connect to the server. Is the Python backend running?");
+      setError(err.response?.data?.error || "Failed to connect to the server.");
     } finally {
       setLoading(false);
     }
@@ -50,43 +49,35 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="glass-card">
+      <div className="card">
         <div className="header">
           <h1>Placement Predictor</h1>
-          <p>AI-powered placement probability analysis</p>
+          <p>Enter student details to predict placement</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="prediction-form">
           <div className="input-group">
             <label htmlFor="iq">Student IQ</label>
-            <div className="input-wrapper">
-              <Brain />
-              <input
-                type="number"
-                id="iq"
-                name="iq"
-                placeholder="e.g. 100"
-                value={formData.iq}
-                onChange={handleChange}
-                step="0.01"
-              />
-            </div>
+            <input
+              type="number"
+              id="iq"
+              name="iq"
+              value={formData.iq}
+              onChange={handleChange}
+              step="0.01"
+            />
           </div>
 
           <div className="input-group">
             <label htmlFor="cgpa">Student CGPA</label>
-            <div className="input-wrapper">
-              <GraduationCap />
-              <input
-                type="number"
-                id="cgpa"
-                name="cgpa"
-                placeholder="e.g. 7.5"
-                value={formData.cgpa}
-                onChange={handleChange}
-                step="0.01"
-              />
-            </div>
+            <input
+              type="number"
+              id="cgpa"
+              name="cgpa"
+              value={formData.cgpa}
+              onChange={handleChange}
+              step="0.01"
+            />
           </div>
 
           <button 
@@ -94,37 +85,25 @@ function App() {
             className="predict-btn"
             disabled={loading}
           >
-            {loading ? (
-              <Loader2 className="spinner" />
-            ) : (
-              <Sparkles />
-            )}
-            {loading ? 'Analyzing...' : 'Predict Placement'}
+            {loading ? 'Predicting...' : 'Predict'}
           </button>
         </form>
 
         {error && (
-          <div className="result-card error" style={{ padding: '1rem', marginTop: '1rem' }}>
-            <p style={{ color: 'var(--error)' }}>{error}</p>
+          <div className="alert error-alert">
+            <p>{error}</p>
           </div>
         )}
 
         {result && (
-          <div className={`result-card ${result.prediction === 1 ? 'success' : 'error'}`}>
-            <div className="result-icon">
-              {result.prediction === 1 ? (
-                <CheckCircle2 size={32} />
-              ) : (
-                <XCircle size={32} />
-              )}
-            </div>
-            <h2 className="result-title">
-              {result.prediction === 1 ? 'High Chance of Placement!' : 'Needs Improvement'}
+          <div className={`alert ${result.prediction === 1 ? 'success-alert' : 'error-alert'}`}>
+            <h2>
+              {result.prediction === 1 ? 'Placed' : 'Not Placed'}
             </h2>
-            <p style={{ color: 'var(--text-muted)' }}>
+            <p>
               {result.prediction === 1 
-                ? 'Great job! The model predicts this student will be placed.'
-                : 'The model predicts this student might struggle to be placed.'}
+                ? 'The model predicts this student will be placed.'
+                : 'The model predicts this student will not be placed.'}
             </p>
           </div>
         )}
